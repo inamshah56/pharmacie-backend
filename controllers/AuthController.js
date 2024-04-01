@@ -88,7 +88,7 @@ exports.registerAdmin = [
                     email: "admin@agronomics.pk",
                     password: await bcrypt.hash(req.body.password, 10)
                });
-               return apiResponse.successResponse("Registered Sucessfully");
+               return apiResponse.successResponse(res,"Registered Sucessfully");
           }
           else{
                return apiResponse.unauthorizedResponse(res, "Admin already exist");
