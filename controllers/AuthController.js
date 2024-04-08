@@ -19,6 +19,27 @@ const storage = multer.diskStorage({
          cb(null, Date.now() + file.originalname);
      }
  });
+
+ let sanitizedPhoneNumber = (str) => {
+     //Filter only numbers from the input
+     let cleaned = ("" + str).replace(/\D/g, "");
+     
+     if(cleaned.length == 0){
+         return null;
+     }
+     else if(cleaned.length > 12){
+          return null;
+     }
+     else if(cleaned.length == 11 && cleaned[0] == "0"){
+         return cleaned;
+     }
+     else if(cleaned.length == 12 && cleaned[0] == "9"){
+          return "0"+cleaned.substring(2);
+     }
+     else{
+          return null;
+     }
+}
  
  const fileFilter = (req, file, cb) => {
      if (file.mimetype == "image/jpeg" || file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/heif" || file.mimetype == "image/heic") {
@@ -106,6 +127,12 @@ exports.passwordLessLogin = [
           if (!phone)
           return apiResponse.validationErrorWithData(res, "Please provide email or phone");
      
+          phone = await sanitizedPhoneNumber(phone);
+          if (!phone) {
+               console.log("Invalid phone number", phone);
+               return apiResponse.ErrorResponse(res, "Invalid phone number")
+          }
+
           let userData = {};
           const otpExpiry = moment().add(10, "minutes").valueOf();
           let otp = await randomNumber(4);
@@ -300,7 +327,14 @@ exports.profileUpdate = [
           
           let update = {};
           if (name) update.name = name;
-          if (phone) update.phone = phone;
+          if (phone) {
+               phone = await sanitizedPhoneNumber(phone);
+               if (!phone) {
+                    console.log("Invalid phone number", phone);
+                    return apiResponse.ErrorResponse(res, "Invalid phone number")
+               }
+               update.phone = phone
+          };
           if (email) update.email = email;
           if (description) update.description = description;
 
