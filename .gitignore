@@ -64,5 +64,3 @@ typings/
 
 #env file
 .env
-
-package-lock.json

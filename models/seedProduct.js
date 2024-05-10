@@ -1,9 +1,15 @@
 module.exports = (sequelize, Sequelize) => {
-    const Seeds = sequelize.define('SeedProducts', {
+    const SeedProducts = sequelize.define('SeedProducts', {
         id:{
           type: Sequelize.DataTypes.INTEGER,
           primaryKey: true,
           autoIncrement: true
+        },
+        uuid:{
+          type: Sequelize.DataTypes.UUID,
+          allowNull: false,
+          unique: true,
+          defaultValue: Sequelize.DataTypes.UUIDV4
         },
         name: Sequelize.DataTypes.STRING,
         brand: Sequelize.DataTypes.STRING,
@@ -16,14 +22,14 @@ module.exports = (sequelize, Sequelize) => {
         weightUnit: Sequelize.DataTypes.STRING,
         pkgWeight: Sequelize.DataTypes.FLOAT,
         pkgQuantity: Sequelize.DataTypes.INTEGER,
-        description: Sequelize.DataTypes.STRING(2000),
+        description: Sequelize.DataTypes.STRING(6000),
         ProductType: Sequelize.DataTypes.STRING,
         image: Sequelize.DataTypes.JSON,
-        isVerified: Sequelize.DataTypes.BOOLEAN,
+        isVerified: Sequelize.DataTypes.BOOLEAN
     },{
         underscored: true,
       });
   
-    return Seeds;
+    return SeedProducts;
   };
   

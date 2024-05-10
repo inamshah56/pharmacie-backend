@@ -7,7 +7,7 @@ module.exports = (sequelize, Sequelize) => {
         },
         name: Sequelize.DataTypes.STRING,
         unit: Sequelize.DataTypes.STRING,
-        volume: Sequelize.DataTypes.STRING,
+        volume: Sequelize.DataTypes.FLOAT,
     },{
         underscored: true,
     });

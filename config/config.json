@@ -1,9 +1,9 @@
 {
   "local": {
-    "username": "postgres",
+    "username": "ngexzlxj",
     "password": "admin",
     "database": "postgres",
-    "host": "localhost",
+    "host": "postgres://ngexzlxj:v6ixp2zrW7fMt5BMBRI4ZBXyeHqy_CiG@rain.db.elephantsql.com/ngexzlxj",
     "port": 5432,
     "dialect": "postgres",
     "pool": {
@@ -11,7 +11,8 @@
       "min": 0,
       "acquire": 30000,
       "idle": 10000
-    }
+    },
+    "url": "postgres://ngexzlxj:v6ixp2zrW7fMt5BMBRI4ZBXyeHqy_CiG@rain.db.elephantsql.com/ngexzlxj"
   },
   "development": {
     "username": "postgres",

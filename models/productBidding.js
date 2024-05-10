@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const Bidding = sequelize.define("ProductBidding", {
+    const ProductBidding = sequelize.define("ProductBidding", {
         id:{
           type: Sequelize.DataTypes.INTEGER,
           primaryKey: true,
@@ -10,5 +10,5 @@ module.exports = (sequelize, Sequelize) => {
         underscored: true,
     });
   
-    return Bidding;
+    return ProductBidding;
 };

@@ -36,10 +36,10 @@ exports.addProduct = [
     try{
         upload(req, res, async function (err) {
             if (err instanceof multer.MulterError) {
-              res.status(400).send('Multer error: ' + err.message);
+              return apiResponse.ErrorResponse(res,  'Multer error: ' + err.message);
             } 
             else if (err) {
-              res.status(500).send('Unknown error: ' + err.message);
+              return apiResponse.ErrorResponse(res, 'Unknown error: ' + err.message);
             } 
             else if (!req.body.productType) {
               return apiResponse.ErrorResponse(res, "Product type is required")
@@ -65,6 +65,34 @@ exports.addProduct = [
                   }
                 }
                 
+                if(req.body.disease){
+                  if(typeof req.body.disease == "string"){
+                    try{
+                        req.body.disease = JSON.parse(req.body.disease)
+                    }
+                    catch(err){
+                      return apiResponse.ErrorResponse(res, "Please make sure to stringify disease before send")
+                    }
+                  }
+                  else{
+                    return apiResponse.ErrorResponse(res, "Please make sure to stringify disease before send")
+                  }
+                }
+                
+                if(req.body.disease){
+                  if(typeof req.body.disease == "string"){
+                    try{
+                        req.body.disease = JSON.parse(req.body.disease)
+                    }
+                    catch(err){
+                      return apiResponse.ErrorResponse(res, "Please make sure to stringify disease before send")
+                    }
+                  }
+                  else{
+                    return apiResponse.ErrorResponse(res, "Please make sure to stringify disease before send")
+                  }
+                }
+
                 let product;
                 let productKey;
                 if(!req.body.isAlreadyExists){
@@ -125,6 +153,9 @@ exports.addProduct = [
                           formType: req.body.formType,
                           image: images,
                           isVerified: false,
+                          subProductType: req.body.subProductType,
+                          areaCovered: req.body.areaCovered,
+                          disease: req.body.disease,
                           addedBy: req.user.id
                       })
                       .catch((e) => { console.error(e.message) })
@@ -173,6 +204,7 @@ exports.addProduct = [
                     price:  req.body.price,
                     ProductType:  req.body.productType,
                     owner: req.user.id,
+                    expiryDate: req.body.expiryDate,
                     addressId: (req.body.addressId) ? JSON.parse(req.body.addressId) : []
                   })
                   .catch((e) => { console.error(e.message) })
@@ -214,32 +246,61 @@ exports.deleteProduct = [
   }
 }]
 
-exports.getProductLisingsWRTType = [
+exports.filterProductLisings = [
     async (req, res) => {
     try{
-      // const { limit = 20, skip = 0 } = req.query;
-      if (!req.body.productType) {
-        return apiResponse.ErrorResponse(res, "Product type is required")
-      } 
+      let filter =  {
+        isVerified: true
+      }
+  
+      if(req.body.query){
+        filter.name ={[Op.iLike]: `%${req.body.query}%`}
+      }
+  
+      if(req.body.brand){
+        filter.brand ={[Op.iLike]: `%${req.body.brand}%`}
+      }
+
+      if((req.body.subCategory || req.body.subProductType) && req.body.productType !== "Machinary & Tools" && req.body.productType !== "Seed" && req.body.productType !== "Seed Varieties"){
+        if(req.body.subCategory){
+          filter.subProductType ={[Op.iLike]: `%${req.body.subCategory}%`}
+        }
+        if(req.body.subProductType){
+          filter.subProductType ={[Op.iLike]: `%${req.body.subProductType}%`}
+        }
+      }
+
+      if(req.body.category){
+        req.body.productType = req.body.category;
+      }
+
 
       let allProducts = await Models.ListingProduct.findAll({
-        where: { ProductType:req.body.productType},
+        where:  (req.body.productType) ? {ProductType:req.body.productType}: {},
         include: [
           {
             model: Models.Product,
-            as: "product"
+            as: "product",
+            where: filter,
+            required: false,
+            include: {
+              model: Models.Composition,
+              as: "composition", // Use the default alias assigned by Sequelize
+            },
           },
           {
             model: Models.MachineryProduct,
-            as: "machineryProduct"
+            as: "machineryProduct",
+            where: filter,
+            required: false
           }, 
           {
             model: Models.SeedProducts,
-            as: "seedProducts"
+            as: "seedProducts",
+            where: filter,
+            required: false
           }  
         ],
-        // limit: parseInt(limit),
-        // offset: parseInt(skip),
         order: [['createdAt', 'DESC']]
       });
 
@@ -271,11 +332,23 @@ exports.getProductLisingsWRTType = [
           delete x.machineryProduct;
           delete x.seedProducts;
 
-          listingProducts.push({...x, ...temp})
+          let temp2 = {...x, ...temp};
+
+          if(temp2 && temp2.composition && temp2.composition.length && req.body.composition && req.body.composition.length > 0){
+            let count = 0;
+            req.body.composition.forEach(c => {
+              let exist = temp2.composition.find(x => x.name.toLowerCase() == c.name.toLowerCase() && x.unit.toLowerCase() == c.unit.toLowerCase() && parseFloat(x.volume) == parseFloat(c.volume));
+              if(exist) count = count + 1;
+            })
+            if(count == req.body.composition.length){
+              listingProducts.push(temp2);
+            }
+          }
+          else{
+            listingProducts.push(temp2)
+          }
         }
       })
-
-
       return apiResponse.successResponseWithData(res, "data", listingProducts)
     }catch(err){
       console.log(err)
@@ -564,10 +637,15 @@ exports.search = [
     async (req, res) => {
     try {
       let filter =  {
-          name: {
-            [Op.iLike]: `%${req.body.query}%` // Case-insensitive search
-          },
-          isVerified: true
+        isVerified: true
+      }
+
+      if(req.body.query){
+        filter.name ={[Op.iLike]: `%${req.body.query}%`}
+      }
+
+      if(req.body.brand){
+        filter.brand ={[Op.iLike]: `%${req.body.brand}%`}
       }
       
       let products;
@@ -590,6 +668,12 @@ exports.search = [
         }
         else {
           filter.ProductType = req.body.productType;
+          if(req.body.subCategory){
+            filter.subProductType ={[Op.iLike]: `%${req.body.subCategory}%`}
+          }
+          if(req.body.subProductType){
+            filter.subProductType ={[Op.iLike]: `%${req.body.subProductType}%`}
+          }
           products = await Models.Product.findAll({
             where: filter,
             order: [['createdAt', 'DESC']],
@@ -617,6 +701,12 @@ exports.search = [
         if(req.body.category){
           filter.ProductType = req.body.category;
         }
+        if(req.body.subCategory){
+          filter.subProductType ={[Op.iLike]: `%${req.body.subCategory}%`}
+        }
+        if(req.body.subProductType){
+          filter.subProductType ={[Op.iLike]: `%${req.body.subProductType}%`}
+        }
   
         const common = await Models.Product.findAll({
           where: filter,
@@ -632,7 +722,23 @@ exports.search = [
         if(seeds) products.push(...seeds)
         if(machinary) products.push(...machinary)
       }
-      return apiResponse.successResponseWithData(res, "Search Result", products)
+      let finalProducts = [];
+      if(req.body.composition && req.body.composition.length > 0){
+        for await(let product of products){
+          let count = 0;
+          req.body.composition.forEach(c => {
+            let exist = product.composition.find(x => x.name.toLowerCase() == c.name.toLowerCase() && x.unit.toLowerCase() == c.unit.toLowerCase() && parseFloat(x.volume) == parseFloat(c.volume));
+            if(exist) count = count + 1;
+          })
+          if(count == req.body.composition.length){
+            finalProducts.push(product);
+          }
+        }
+      }
+      else{
+        finalProducts = products;
+      }
+      return apiResponse.successResponseWithData(res, "Search Result", finalProducts)
   } catch (err) {
     console.error(err);
     return apiResponse.ErrorResponse(res, "Something went wrong")

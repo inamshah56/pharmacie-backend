@@ -1,6 +1,5 @@
 const Models = require("../models");
 const apiResponse = require("../helpers/apiResponse");
-const validatePhone = require("../helpers/validatePhone");
 const randomNumber = require("../helpers/randomNumber");
 const moment = require("moment");
 const sendMessage = require("../helpers/sendMessage");
@@ -123,11 +122,12 @@ exports.registerAdmin = [
 exports.passwordLessLogin = [
      async (req, res) => {
      try{
-          const {phone, type} = req.body;
+          let {phone, type} = req.body;
           if (!phone)
           return apiResponse.validationErrorWithData(res, "Please provide email or phone");
      
           phone = await sanitizedPhoneNumber(phone);
+
           if (!phone) {
                console.log("Invalid phone number", phone);
                return apiResponse.ErrorResponse(res, "Invalid phone number")
@@ -137,9 +137,6 @@ exports.passwordLessLogin = [
           const otpExpiry = moment().add(10, "minutes").valueOf();
           let otp = await randomNumber(4);
           
-          let validatePhoneError = validatePhone(phone);
-          console.log(validatePhoneError);
-          if (validatePhoneError) return apiResponse.validationErrorWithData(res, validatePhoneError);
           userData = await Models.User.findOne({
                where: { phone: phone },
           });
@@ -196,7 +193,6 @@ exports.passwordLessLogin = [
           else {
                return apiResponse.ErrorResponse(res, "Something went wrong");
           }
-          
      }
      catch(err){
           console.log(err);

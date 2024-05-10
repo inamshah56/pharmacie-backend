@@ -5,6 +5,12 @@ module.exports = (sequelize, Sequelize) => {
           primaryKey: true,
           autoIncrement: true
         },
+        uuid:{
+          type: Sequelize.DataTypes.UUID,
+          allowNull: false,
+          unique: true,
+          defaultValue: Sequelize.DataTypes.UUIDV4
+        },
         brand: Sequelize.DataTypes.STRING,
         name: Sequelize.DataTypes.STRING,
         horsePower: Sequelize.DataTypes.FLOAT,
@@ -13,7 +19,7 @@ module.exports = (sequelize, Sequelize) => {
         condition: Sequelize.DataTypes.STRING,
         image: Sequelize.DataTypes.JSON,
         discount: Sequelize.DataTypes.FLOAT,
-        description: Sequelize.DataTypes.STRING(2000),
+        description: Sequelize.DataTypes.STRING(6000),
         ProductType: Sequelize.DataTypes.STRING,
         isVerified: Sequelize.DataTypes.BOOLEAN,
     },{

@@ -1,4 +1,5 @@
 var express = require("express");
+const pg = require('pg');
 var path = require("path");
 var logger = require("morgan");
 require("dotenv").config();
@@ -37,12 +38,6 @@ app.use("/api/", apiRouter);
 app.all("*", function(req, res) {
 	return apiResponse.notFoundResponse(res, "Page not found");
 });
-
-// app.use((err, req, res) => {
-// 	if(err.name == "UnauthorizedError"){
-// 		return apiResponse.unauthorizedResponse(res, err.message);
-// 	}
-// });
 
 // module.exports = app;
 app.listen(process.env.PORT || 4000, () => {});
