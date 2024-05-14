@@ -337,7 +337,27 @@ exports.filterProductLisings = [
           if(temp2 && temp2.composition && temp2.composition.length && req.body.composition && req.body.composition.length > 0){
             let count = 0;
             req.body.composition.forEach(c => {
-              let exist = temp2.composition.find(x => x.name.toLowerCase() == c.name.toLowerCase() && x.unit.toLowerCase() == c.unit.toLowerCase() && parseFloat(x.volume) == parseFloat(c.volume));
+              let exist = temp2.composition.find(x => {
+                x = (x.dataValues) ? x.dataValues : x;
+                if(x.name && x.unit && x.volume && c.name && c.unit && c.volume && x.name.toLowerCase() == c.name.toLowerCase() && x.unit.toLowerCase() == c.unit.toLowerCase() && parseFloat(x.volume) == parseFloat(c.volume)){
+                  return x;
+                }
+                if(x.name && x.unit && c.name && c.unit && x.name.toLowerCase() == c.name.toLowerCase() && x.unit.toLowerCase() == c.unit.toLowerCase()){
+                  return x;
+                }
+                if(x.name && x.volume && c.name && c.volume && x.name.toLowerCase() == c.name.toLowerCase() && parseFloat(x.volume) == parseFloat(c.volume)){
+                  return x;
+                }
+                if(x.unit && c.unit &&  x.unit.toLowerCase() == c.unit.toLowerCase()){
+                  return x;
+                }
+                if(x.volume && c.volume && parseFloat(x.volume) == parseFloat(c.volume)){
+                  return x;
+                }
+                if(x.name && c.name && x.name.toLowerCase() == c.name.toLowerCase()){
+                  return x;
+                }
+              });
               if(exist) count = count + 1;
             })
             if(count == req.body.composition.length){
@@ -727,7 +747,27 @@ exports.search = [
         for await(let product of products){
           let count = 0;
           req.body.composition.forEach(c => {
-            let exist = product.composition.find(x => x.name.toLowerCase() == c.name.toLowerCase() && x.unit.toLowerCase() == c.unit.toLowerCase() && parseFloat(x.volume) == parseFloat(c.volume));
+            let exist = product.composition.find(x => {
+              x = (x.dataValues) ? x.dataValues : x;
+              if(x.name && x.unit && x.volume && c.name && c.unit && c.volume && x.name.toLowerCase() == c.name.toLowerCase() && x.unit.toLowerCase() == c.unit.toLowerCase() && parseFloat(x.volume) == parseFloat(c.volume)){
+                return x;
+              }
+              if(x.name && x.unit && c.name && c.unit && x.name.toLowerCase() == c.name.toLowerCase() && x.unit.toLowerCase() == c.unit.toLowerCase()){
+                return x;
+              }
+              if(x.name && x.volume && c.name && c.volume && x.name.toLowerCase() == c.name.toLowerCase() && parseFloat(x.volume) == parseFloat(c.volume)){
+                return x;
+              }
+              if(x.unit && c.unit &&  x.unit.toLowerCase() == c.unit.toLowerCase()){
+                return x;
+              }
+              if(x.volume && c.volume && parseFloat(x.volume) == parseFloat(c.volume)){
+                return x;
+              }
+              if(x.name && c.name && x.name.toLowerCase() == c.name.toLowerCase()){
+                return x;
+              }
+            });
             if(exist) count = count + 1;
           })
           if(count == req.body.composition.length){

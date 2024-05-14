@@ -29,6 +29,132 @@ const upload = multer({
   }
 }).array('images', 4);
 
+async function validateProduct(body){
+  let filter = {
+    name : {[Op.iLike]: `%${body.name}%`},
+    brand : {[Op.iLike]: `%${body.brand}%`},
+  }
+
+  if(body.productType == "Seed" || body.productType == "Seed Varieties"){
+    if(body.weightUnit){
+      filter.weightUnit = body.weightUnit;
+    }
+    if(body.pkgWeight){
+      filter.pkgWeight = body.pkgWeight;
+    }
+    if(body.pkgQuantity){
+      filter.pkgQuantity = body.pkgQuantity;
+    }
+    let product = await Models.SeedProducts.findOne({
+      where: filter,
+    });
+    if(product){
+      return false;
+    }
+    else{
+      return true;
+    }
+  }
+  else if(body.productType == "Machinary & Tools"){
+    if(body.weightUnit){
+      filter.weightUnit = body.weightUnit;
+    }
+    if(body.pkgWeight){
+      filter.pkgWeight = body.pkgWeight;
+    }
+    if(body.pkgQuantity){
+      filter.pkgQuantity = body.pkgQuantity;
+    }
+    let product = await Models.MachineryProduct.findAll({
+      where: filter
+    });
+    if(product){
+      return false;
+    }
+    else{
+      return true;
+    }
+  }
+  else {
+    filter.ProductType = body.productType;
+    if(body.subProductType){
+      filter.subProductType ={[Op.iLike]: `%${body.subProductType}%`}
+    }
+    if(body.weightUnit){
+      filter.weightUnit = body.weightUnit;
+    }
+    if(body.pkgWeight){
+      filter.pkgWeight = body.pkgWeight;
+    }
+    if(body.pkgQuantity){
+      filter.pkgQuantity = body.pkgQuantity;
+    }
+
+    let products = await Models.Product.findAll({
+      where: filter,
+      include:{
+        model: Models.Composition,
+        as: "composition", // Use the default alias assigned by Sequelize
+      }
+    });
+    
+    let finalProducts = [];
+    if(products && products.length > 0){
+      for await(let product of products){
+        if(product.composition && product.composition.length == body.composition.length){
+          let count = 0;
+          body.composition.forEach(c => {
+            let exist = product.composition.find(x => {
+              x = x.dataValues;
+              if(x.name && x.unit && x.volume){
+                if(c.name && c.unit && c.volume && x.name.toLowerCase() == c.name.toLowerCase() && x.unit.toLowerCase() == c.unit.toLowerCase() && parseFloat(x.volume) == parseFloat(c.volume)){
+                  return x;
+                }
+              }
+              if(x.name && x.unit){
+                if(c.name && c.unit && x.name.toLowerCase() == c.name.toLowerCase() && x.unit.toLowerCase() == c.unit.toLowerCase()){
+                  return x;
+                }
+              }
+              if(x.name && x.volume){
+                if(c.name && c.volume && x.name.toLowerCase() == c.name.toLowerCase() && parseFloat(x.volume) == parseFloat(c.volume)){
+                  return x;
+                }
+              }
+              if(x.unit){
+                if(c.unit &&  x.unit.toLowerCase() == c.unit.toLowerCase()){
+                  return x;
+                }
+              }
+              if(x.volume){
+                if(c.volume && parseFloat(x.volume) == parseFloat(c.volume)){
+                  return x;
+                }
+              }
+              if(x.name){
+                if(c.name && x.name.toLowerCase() == c.name.toLowerCase()){
+                  return x;
+                }
+              }
+            });
+            if(exist) count = count + 1;
+          })
+          if(count == product.composition.length){
+            finalProducts.push(product);
+          }
+        }
+      }
+    }
+
+    if(finalProducts.length > 0){
+      return false;
+    }
+    else{
+      return true;
+    }
+  }
+}
+
 exports.addProduct = [
     TechAuth,
     async (req, res) => {
@@ -76,6 +202,9 @@ exports.addProduct = [
                     return apiResponse.ErrorResponse(res, "Please make sure to stringify disease before send")
                   }
                 }
+
+                let check = await validateProduct(req.body);
+                if(!check) return apiResponse.ErrorResponse(res, "Product already exist")
                 
                 if(req.body.productType == "Seed" || req.body.productType == "Seed Varieties"){
                   console.log("Seeds")
@@ -757,7 +886,27 @@ exports.getProductsWRToType = [
       for await(let product of products){
         let count = 0;
         req.body.composition.forEach(c => {
-          let exist = product.composition.find(x => x.name.toLowerCase() == c.name.toLowerCase() && x.unit.toLowerCase() == c.unit.toLowerCase() && parseFloat(x.volume) == parseFloat(c.volume));
+          let exist = product.composition.find(x => {
+            x = (x.dataValues) ? x.dataValues : x;
+            if(x.name && x.unit && x.volume && c.name && c.unit && c.volume && x.name.toLowerCase() == c.name.toLowerCase() && x.unit.toLowerCase() == c.unit.toLowerCase() && parseFloat(x.volume) == parseFloat(c.volume)){
+              return x;
+            }
+            if(x.name && x.unit && c.name && c.unit && x.name.toLowerCase() == c.name.toLowerCase() && x.unit.toLowerCase() == c.unit.toLowerCase()){
+              return x;
+            }
+            if(x.name && x.volume && c.name && c.volume && x.name.toLowerCase() == c.name.toLowerCase() && parseFloat(x.volume) == parseFloat(c.volume)){
+              return x;
+            }
+            if(x.unit && c.unit &&  x.unit.toLowerCase() == c.unit.toLowerCase()){
+              return x;
+            }
+            if(x.volume && c.volume && parseFloat(x.volume) == parseFloat(c.volume)){
+              return x;
+            }
+            if(x.name && c.name && x.name.toLowerCase() == c.name.toLowerCase()){
+              return x;
+            }
+          });
           if(exist) count = count + 1;
         })
         if(count == req.body.composition.length){
