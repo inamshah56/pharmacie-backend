@@ -5,7 +5,7 @@ const connectDB = async () => {
     console.log({ force: process.env.FORCE_DB })
     await db.sequelize.sync({ alter: process.env.ALTER_DB });
     console.log("Connected to the database!");
-    console.log(`Server is running on Port: ${process.env.PORT}`);
+    console.log(`Server is running on Port: 2033`);
     console.log("Press CTRL + C to stop the process.");
     console.log("=====================================================================================================================");
     console.log("=====================================================================================================================");
