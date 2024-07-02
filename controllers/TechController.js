@@ -5,6 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { Op } = require("sequelize");
+const toLowerCaseUtil = require("../helpers/toLowerCaseUtil");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -160,6 +161,7 @@ exports.addProduct = [
   TechAuth,
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       upload(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
           res.status(400).send('Multer error: ' + err.message);
@@ -408,6 +410,7 @@ exports.addProductImage = [
   TechAuth,
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       upload(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
           res.status(400).send('Multer error: ' + err.message);
@@ -487,6 +490,7 @@ exports.deleteProductImage = [
   TechAuth,
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       if (!req.body.id) {
         return apiResponse.ErrorResponse(res, "Product is is required")
       }
@@ -641,6 +645,7 @@ exports.productDetails = [
   TechAuth,
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       if (!req.body.id) {
         return apiResponse.ErrorResponse(res, "Product is is required")
       }
@@ -703,6 +708,7 @@ exports.approveProduct = [
   TechAuth,
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       if (!req.body.productId || !req.body.productType) {
         return apiResponse.ErrorResponse(res, "Product Id is required");
       }
@@ -760,6 +766,7 @@ exports.getProductsWRToType = [
   TechAuth,
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       let products;
       let filter = {};
       if (req.body.status && (req.body.status.toLowerCase() == "verified" || req.body.status.toLowerCase() == "verfied")) {
@@ -931,6 +938,7 @@ exports.addComposition = [
   TechAuth,
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       if (!req.body.name) {
         return apiResponse.ErrorResponse(res, "Composition Name is required")
       }
@@ -948,6 +956,7 @@ exports.updateComposition = [
   TechAuth,
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       if (!req.body.name || !req.body.id) {
         return apiResponse.ErrorResponse(res, "Composition Name or Id is missing")
       }
@@ -968,6 +977,7 @@ exports.deleteComposition = [
   TechAuth,
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       if (!req.body.id) {
         return apiResponse.ErrorResponse(res, "Id is missing")
       }
@@ -986,6 +996,7 @@ exports.deleteComposition = [
 exports.GetComposition = [
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       let data = await Models.CompositionList.findAll(
         { where: {} }
       );

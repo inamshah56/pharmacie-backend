@@ -6,6 +6,7 @@ const multer = require('multer');
 const path = require('path');
 const { Op } = require('sequelize');
 const { log } = require("console");
+const toLowerCaseUtil = require("../helpers/toLowerCaseUtil")
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -35,6 +36,8 @@ exports.addProduct = [
   SellerAuh,
   async (req, res) => {
     try {
+      // Convert req.body to lowercase
+      req.body = toLowerCaseUtil(req.body);
       upload(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
           return apiResponse.ErrorResponse(res, 'Multer error: ' + err.message);
@@ -66,21 +69,6 @@ exports.addProduct = [
               return apiResponse.ErrorResponse(res, "Please make sure to stringify composition before send")
             }
           }
-
-
-          // if (req.body.disease) {
-          //   if (typeof req.body.disease == "string") {
-          //     try {
-          //       req.body.disease = JSON.parse(req.body.disease)
-          //     }
-          //     catch (err) {
-          //       return apiResponse.ErrorResponse(res, "Please make sure to stringify disease before send")
-          //     }
-          //   }
-          //   else {
-          //     return apiResponse.ErrorResponse(res, "Please make sure to stringify disease before send")
-          //   }
-          // }
 
           if (req.body.disease) {
 
@@ -228,6 +216,7 @@ exports.addProduct = [
 exports.deleteProduct = [
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       if (req.query.type == "seed") {
         await Models.SeedProducts.destroy({
           where: { id: req.params.id }
@@ -254,6 +243,7 @@ exports.deleteProduct = [
 exports.filterProductLisings = [
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       let filter = {
         isVerified: true
       }
@@ -452,7 +442,7 @@ exports.getMyProduct = [
   async (req, res) => {
     try {
       // const { limit = 20, skip = 0 } = req.query;
-
+      req.body = toLowerCaseUtil(req.body);
       let allProducts = await Models.ListingProduct.findAll({
         where: { owner: req.user.id },
         include: [
@@ -518,7 +508,7 @@ exports.getUserProduct = [
   async (req, res) => {
     try {
       // const { limit = 20, skip = 0 } = req.query;
-
+      req.body = toLowerCaseUtil(req.body);
       let allProducts = await Models.ListingProduct.findAll({
         where: { owner: req.params.id },
         include: [
@@ -582,6 +572,7 @@ exports.getUserProduct = [
 exports.getProducDetails = [
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       let listing = await Models.ListingProduct.findOne({
         where: { id: req.params.id },
         include: [{
@@ -661,6 +652,7 @@ exports.getProducDetails = [
 exports.search = [
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       let filter = {
         isVerified: true
       }
@@ -795,6 +787,7 @@ exports.requestProduct = [
   BuyerAuh,
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       let { productId } = req.body;
 
       if (!productId) {
@@ -837,6 +830,7 @@ exports.biddingProduct = [
   BuyerAuh,
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       let { productId, price } = req.body;
 
       if (!price || !productId) {
@@ -883,6 +877,7 @@ exports.productRequests = [
   SellerAuh,
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       let listing = await Models.ListingProduct.findAll({
         where: { owner: req.user.id },
         include: [{
@@ -908,6 +903,7 @@ exports.productBidders = [
   SellerAuh,
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       let listing = await Models.ListingProduct.findAll({
         where: { owner: req.user.id },
         include: [{
@@ -933,6 +929,7 @@ exports.analyticProduct = [
   SellerAuh,
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       let totalProducts = await Models.ListingProduct.findAll({
         where: { owner: req.user.id },
         attributes: ["id"]
