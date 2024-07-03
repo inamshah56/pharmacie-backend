@@ -161,7 +161,6 @@ exports.addProduct = [
   TechAuth,
   async (req, res) => {
     try {
-      req.body = toLowerCaseUtil(req.body);
       upload(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
           res.status(400).send('Multer error: ' + err.message);
@@ -251,6 +250,7 @@ exports.addProduct = [
             });
           } else {
             console.log("Common");
+            req.body = toLowerCaseUtil(req.body);
             product = await Models.Product.create({
               name: req.body.name,
               brand: req.body.brand,
@@ -297,6 +297,7 @@ exports.updateProduct = [
   TechAuth,
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       if (!req.body.productType) {
         return apiResponse.ErrorResponse(res, "Product type is required")
       }
@@ -572,6 +573,7 @@ exports.deleteProduct = [
   TechAuth,
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       if (!req.body.id) {
         return apiResponse.ErrorResponse(res, "Product is is required")
       }
@@ -1012,6 +1014,7 @@ exports.analyticProduct = [
   TechAuth,
   async (req, res) => {
     try {
+      req.body = toLowerCaseUtil(req.body);
       let totalListing = await Models.ListingProduct.count({ where: {} });
       let totalProducts = await Models.Product.count({ where: {} });
       let totalSeeds = await Models.SeedProducts.count({ where: {} });

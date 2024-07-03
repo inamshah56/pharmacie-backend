@@ -1,6 +1,6 @@
 // toLowerCaseUtil.js
 
-module.exports = (obj) => {
+module.exports = function (obj) {
     function toLowerCaseRecursive(obj) {
         if (typeof obj === 'string') {
             return obj.toLowerCase();

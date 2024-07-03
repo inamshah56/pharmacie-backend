@@ -131,6 +131,7 @@ exports.addProduct = [
             }
             else {
               console.log("Common")
+              req.body = toLowerCaseUtil(req.body);
               product = await Models.Product.create({
                 name: req.body.name,
                 brand: req.body.brand,
