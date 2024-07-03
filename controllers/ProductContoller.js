@@ -573,6 +573,10 @@ exports.getUserProduct = [
 exports.getProducDetails = [
   async (req, res) => {
     try {
+      console.log("getProductDetails Api Hit");
+      console.log("getProductDetails Api Hit");
+      console.log("getProductDetails Api Hit");
+      console.log("req body ====================== \n", req.body);
       req.body = toLowerCaseUtil(req.body);
       let listing = await Models.ListingProduct.findOne({
         where: { id: req.params.id },
@@ -645,6 +649,9 @@ exports.getProducDetails = [
         return apiResponse.ErrorResponse(res, "Product not found")
       }
     } catch (err) {
+      console.log("error found");
+      console.log("error found");
+      console.log("error found");
       console.log(err)
       return apiResponse.ErrorResponse(res, "Something went wrong")
     }

@@ -693,7 +693,9 @@ exports.productDetails = [
             ],
           });
         }
-
+        console.log("==========================================")
+        console.log("product ===================== \n", product)
+        console.log("==========================================")
         return apiResponse.successResponseWithData(res, "Product Fetched Sucessfully", product);
       }
       else {
@@ -701,6 +703,9 @@ exports.productDetails = [
       }
     }
     catch (err) {
+      console.log("Error Found")
+      console.log("Error Found")
+      console.log("Error Found")
       console.log(err);
       return apiResponse.ErrorResponse(res, "Something went wrong");
     }
