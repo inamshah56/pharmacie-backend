@@ -36,8 +36,15 @@ exports.addProduct = [
   SellerAuh,
   async (req, res) => {
     try {
+      console.log("addProduct")
+      console.log("addProduct")
+      console.log("addProduct")
+      console.log("addProduct")
+      console.log("addProduct")
+      console.log("addProduct")
+      console.log("addProduct")
+      console.log("req.body", req.body)
       // Convert req.body to lowercase
-      req.body = toLowerCaseUtil(req.body);
       upload(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
           return apiResponse.ErrorResponse(res, 'Multer error: ' + err.message);
@@ -188,6 +195,7 @@ exports.addProduct = [
               return apiResponse.successResponse(res, "Main Product not found")
             }
             console.log(req.user.id)
+            req.body = toLowerCaseUtil(req.body);
             await Models.ListingProduct.create({
               [productKey]: product.id,
               shelfLifeStart: req.body.shelfLifeStart,
@@ -244,6 +252,12 @@ exports.deleteProduct = [
 exports.filterProductLisings = [
   async (req, res) => {
     try {
+
+      console.log("req.body", req.body)
+      console.log("========================================")
+
+      const { category } = req.body.category
+
       req.body = toLowerCaseUtil(req.body);
       let filter = {
         isVerified: true
@@ -267,9 +281,18 @@ exports.filterProductLisings = [
       }
 
       if (req.body.category) {
-        req.body.productType = req.body.category;
+        req.body.productType = category;
       }
 
+      console.log("req.body.productType", req.body.productType);
+      console.log('====================================================');
+
+      console.log("filter", filter);
+      console.log('====================================================');
+
+      // where: {
+      //   product_type: req.body.productType
+      // },
 
       let allProducts = await Models.ListingProduct.findAll({
         where: (req.body.productType) ? { ProductType: req.body.productType } : {},
@@ -299,6 +322,8 @@ exports.filterProductLisings = [
         ],
         order: [['createdAt', 'DESC']]
       });
+
+      console.log("allProducts", allProducts);
 
       let listingProducts = [];
       allProducts.forEach(prop => {
@@ -365,6 +390,9 @@ exports.filterProductLisings = [
           }
         }
       })
+      console.log('====================================================');
+      console.log('listingProducts', listingProducts);
+      console.log('====================================================');
       return apiResponse.successResponseWithData(res, "data", listingProducts)
     } catch (err) {
       console.log(err)
@@ -376,6 +404,11 @@ exports.getProductLisings = [
   async (req, res) => {
     try {
       // const { limit = 20, skip = 0 } = req.query;
+
+      console.log("req.body", req.body)
+      console.log("========================================")
+      console.log("req.query", req.query)
+      console.log("========================================")
 
       let allProducts = await Models.ListingProduct.findAll({
         where: {},
@@ -430,6 +463,8 @@ exports.getProductLisings = [
           listingProducts.push({ ...x, ...temp })
         }
       })
+
+      console.log('listingProducts', listingProducts);
 
       return apiResponse.successResponseWithData(res, "data", listingProducts)
     } catch (err) {
