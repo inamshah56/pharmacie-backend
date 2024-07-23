@@ -58,9 +58,9 @@ const checkProductAvailability = async (productId, locationKey, locationValue) =
 exports.getAllSolutions = [
     async (req, res) => {
         try {
-            const farmTehsil = req.query.tehsil;
-            const farmDistrict = req.query.district;
-            const farmProvince = req.query.province;
+            let farmTehsil = req.query.tehsil;
+            let farmDistrict = req.query.district;
+            let farmProvince = req.query.province;
 
             if (!farmTehsil || !farmDistrict || !farmProvince) {
                 return apiResponse.ErrorResponse(res, "tehsil, district, and province are required fields.");
@@ -70,6 +70,10 @@ exports.getAllSolutions = [
             if (!solutions) {
                 return apiResponse.ErrorResponse(res, "solutions is a required field.");
             }
+
+            farmDistrict = farmDistrict.toLowerCase();
+            farmTehsil = farmTehsil.toLowerCase();
+            farmProvince = farmProvince.toLowerCase();
 
 
             // Split solutions by ',' and '+' and getting unique product UIDs

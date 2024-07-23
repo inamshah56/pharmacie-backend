@@ -11,7 +11,7 @@ if (config.url) {
 }
 else if (config) {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
-} 
+}
 else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
@@ -27,6 +27,7 @@ db["ProductBidding"] = require("./productBidding")(sequelize, Sequelize);
 db["ProductRequest"] = require("./productRequest")(sequelize, Sequelize);
 db["SeedProducts"] = require("./seedProduct")(sequelize, Sequelize);
 db["User"] = require("./user")(sequelize, Sequelize);
+db["PaymentHistory"] = require("./paymentHistory")(sequelize, Sequelize);
 
 
 db.sequelize = sequelize;
@@ -95,5 +96,33 @@ db.MachineryProduct.belongsTo(db.Admin, { as: "admin", onDelete: "CASCADE", onUp
 // =============== Relation Between Admin and Product ===============
 db.Admin.hasMany(db.Product, { as: "product", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "addedByAdmin", allowNull: true } })
 db.Product.belongsTo(db.Admin, { as: "admin", onDelete: "CASCADE", onUpdate: "CASCADE", foreignKey: { name: "addedByAdmin", allowNull: true } })
+
+
+// ===================================================================
+// ============================ relations ============================
+// ===================================================================
+
+
+db.Address.hasMany(db.PaymentHistory, {
+  foreignKey: 'address_id',
+  sourceKey: 'id',
+  as: 'payment_history',
+});
+db.PaymentHistory.belongsTo(db.Address, {
+  foreignKey: 'address_id',
+  targetKey: 'id',
+  as: 'address',
+});
+
+db.User.hasMany(db.PaymentHistory, {
+  foreignKey: 'user_id',
+  sourceKey: 'id',
+  as: 'payment_history',
+});
+db.PaymentHistory.belongsTo(db.User, {
+  foreignKey: 'user_id',
+  targetKey: 'id',
+  as: 'user',
+});
 
 module.exports = db;

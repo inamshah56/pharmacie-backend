@@ -16,6 +16,14 @@ module.exports = (sequelize, Sequelize) => {
     tehsil: Sequelize.DataTypes.STRING,
     province: Sequelize.DataTypes.STRING,
     district: Sequelize.DataTypes.STRING,
+    activated: {
+      type: Sequelize.DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    active_date: Sequelize.DataTypes.DATE,
+    ref_no: Sequelize.DataTypes.STRING,
+    response_code: Sequelize.DataTypes.STRING,
+    refered_by: Sequelize.DataTypes.STRING
   }, {
     underscored: true,
   });

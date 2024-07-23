@@ -426,6 +426,7 @@ exports.updateAddress = [
                          });
                     return apiResponse.successResponseWithData(res, "Address updated successfully", data);
                }
+
                else {
                     let data = await Models.Address.create({
                          userId: req.user.id,
@@ -435,6 +436,7 @@ exports.updateAddress = [
                          tehsil,
                          district
                     });
+
                     return apiResponse.successResponseWithData(res, "Address added successfully", data);
                }
           }
