@@ -693,9 +693,6 @@ exports.productDetails = [
             ],
           });
         }
-        console.log("==========================================")
-        console.log("product ===================== \n", product)
-        console.log("==========================================")
         return apiResponse.successResponseWithData(res, "Product Fetched Sucessfully", product);
       }
       else {
