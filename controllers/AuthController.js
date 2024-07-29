@@ -7,7 +7,44 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt")
 const multer = require("multer");
 let SellerAuh = require("../middlewares/sellerAuth");
-const CommonAuth = require("../middlewares/commonAuth")
+const CommonAuth = require("../middlewares/commonAuth");
+const address = require("../models/address");
+
+
+
+// =====================================================================
+//                            Helper Functions
+// =====================================================================
+
+
+function subscriptionExpired(dateString) {
+     // Parse the input date string
+     const active_date = new Date(dateString);
+
+     // Check if the input date is valid
+     if (isNaN(active_date.getTime())) {
+          throw new Error("Invalid date format");
+     }
+
+     const today = new Date();
+
+     // Calculate the difference in time (milliseconds)
+     const timeDifference = active_date - today;
+
+     // Convert the time difference from milliseconds to days
+     const daysDifference = timeDifference / (1000 * 3600 * 24);
+
+     // Check if the difference is greater than 31 days
+     return daysDifference > 31;
+}
+
+
+
+
+
+// =====================================================================
+//                            AuthController
+// =====================================================================
 
 const storage = multer.diskStorage({
      destination: (req, file, cb) => {
@@ -477,6 +514,11 @@ exports.address = [
                let data = await Models.Address.findAll({
                     where: { userId: req.user.id },
                });
+               for (let address of data) {
+                    if (address.activated && subscriptionExpired(address.activated))
+                         address.activated = false;
+               }
+
                return apiResponse.successResponseWithData(res, "Address fetched successfully", data);
           }
           catch (err) {

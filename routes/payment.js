@@ -4,4 +4,5 @@ const router = express.Router();
 
 
 router.post("/jazzcash-mwallet/farmacie", jazzPaymentController.jazzcashMwalletFarmacie);
-// router.post("/jazzcash-mwallet/ipn", Controller.PaymentController.jazzcashCheckout);
+
+module.exports = router;
