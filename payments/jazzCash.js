@@ -89,6 +89,32 @@ const sendRequest = async ({ payload, salt, url, data, credentials }) => {
 //                      MWALLET Functions
 // ################################################################
 
+const resetMwallet = () => {
+    MWALLET.payload = {
+        pp_Amount: "",
+        pp_BillReference: "",
+        pp_CNIC: "",
+        pp_Description: "",
+        pp_DiscountedAmount: "",
+        pp_Language: "EN",
+        pp_MerchantID: "",
+        pp_MobileNumber: "",
+        pp_Password: "",
+        pp_SubMerchantID: "",
+        pp_TxnCurrency: "PKR",
+        pp_TxnDateTime: "",
+        pp_TxnExpiryDateTime: "", // default is 7, user can replace it by providing the expire days.
+        pp_TxnRefNo: "",
+        ppmpf_1: "",
+        ppmpf_2: "",
+        ppmpf_3: "",
+        ppmpf_4: "",
+        ppmpf_5: "",
+    };
+    MWALLET.credentials = false;
+    MWALLET.data = false;
+};
+
 // ====================================================================
 
 const getMwalletCredentials = ({ merchantId, password, salt, sandbox, subMerchantId }) => {
@@ -170,8 +196,10 @@ const setMWalletData = (
 const sendMwalletRequest = async () => {
     try {
         const response = await sendRequest({ payload: MWALLET.payload, salt: MWALLET.salt, url: MWALLET.requestUrl, data: MWALLET.data, credentials: MWALLET.credentials })
+        resetMwallet();
         return response;
     } catch (error) {
+        resetMwallet();
         return Promise.reject(error)
 
     }
@@ -182,7 +210,19 @@ const sendMwalletRequest = async () => {
 //                      INQUIRY Functions
 // ################################################################
 
+// ====================================================================
 
+const resetInquiry = () => {
+    INQUIRY.payload = {
+        pp_MerchantID: "",
+        pp_Password: "",
+        pp_TxnRefNo: "",
+    };
+    INQUIRY.credentials = false;
+    INQUIRY.data = false;
+};
+
+// ====================================================================
 const getInquiryCredentials = ({ merchantId, password, salt, sandbox }) => {
     try {
         if (!merchantId || !password || !salt || sandbox == null) {
@@ -225,8 +265,10 @@ const setInquiryData = ({ txnRefNo }) => {
 const sendInquiryRequest = async () => {
     try {
         const response = await sendRequest({ payload: INQUIRY.payload, salt: INQUIRY.salt, url: INQUIRY.requestUrl, data: INQUIRY.data, credentials: INQUIRY.credentials })
+        resetInquiry();
         return response;
     } catch (error) {
+        resetInquiry();
         return Promise.reject(error)
 
     }
