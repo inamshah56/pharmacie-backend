@@ -28,6 +28,7 @@ db["ProductRequest"] = require("./productRequest")(sequelize, Sequelize);
 db["SeedProducts"] = require("./seedProduct")(sequelize, Sequelize);
 db["User"] = require("./user")(sequelize, Sequelize);
 db["PaymentHistory"] = require("./paymentHistory")(sequelize, Sequelize);
+db["ReferralCode"] = require("./referralCode")(sequelize, Sequelize);
 
 
 db.sequelize = sequelize;
