@@ -29,8 +29,7 @@ exports.generateReferralCodes = async (req, res) => {
     if (!phone) {
       return apiResponse.ErrorResponse(res, "`phone` query parameter is required.");
     }
-
-    // Parse phone if it is a JSON string (e.g., ["03170019205", "03485266396"])
+ 
     if (typeof phone === 'string' && phone.startsWith('[') && phone.endsWith(']')) {
       phone = JSON.parse(phone);  // Parses stringified array into an actual array
     } else if (typeof phone === 'string') {
