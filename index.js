@@ -33,6 +33,7 @@ app.use(cors());
 app.use("/", indexRouter);
 app.use("/api/", apiRouter);
 
+
 // throw 404 if URL not found
 app.all("*", function (req, res) {
 	return apiResponse.notFoundResponse(res, "Page not found");
