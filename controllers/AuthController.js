@@ -29,7 +29,7 @@ function subscriptionExpired(dateString) {
      const today = new Date();
 
      // Calculate the difference in time (milliseconds)
-     const timeDifference = active_date - today;
+     const timeDifference = today - active_date;
 
      // Convert the time difference from milliseconds to days
      const daysDifference = timeDifference / (1000 * 3600 * 24);
@@ -38,9 +38,22 @@ function subscriptionExpired(dateString) {
      return daysDifference > 31;
 }
 
+// =====================================================================
 
+async function refferalCodeExpired(referredBy) {
+     // Check if the referral code exists for the given referredBy
+     const referralCodeData = await Models.ReferralCode.findOne({
+          where: { phone: referredBy }
+     });
 
+     // If no referral code is found, return false (not expired)
+     if (!referralCodeData) {
+          return false;
+     }
 
+     // Check if the referral code's expiration date is in the past
+     return new Date(referralCodeData.expiresAt) < new Date();
+}
 
 // =====================================================================
 //                            AuthController
@@ -514,9 +527,17 @@ exports.address = [
                let data = await Models.Address.findAll({
                     where: { userId: req.user.id },
                });
+
+               // Loop through each address to check referral code expiry and subscription expiry
                for (let address of data) {
-                    if (address.activated && subscriptionExpired(address.activated))
-                         address.activated = false;
+                    if (address.activated) {
+                         // Check if the referral code or subscription is expired
+                         const referralExpired = address.refered_by ? await refferalCodeExpired(address.refered_by) : false;
+                         if (subscriptionExpired(address.active_date) || referralExpired) {
+                              address.activated = false;
+                              await address.save();
+                         }
+                    }
                }
 
                return apiResponse.successResponseWithData(res, "Address fetched successfully", data);

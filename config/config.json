@@ -1,46 +1,46 @@
 {
-  "local": {
-    "username": "ngexzlxj",
-    "password": "admin",
-    "database": "postgres",
-    "host": "postgres://ngexzlxj:v6ixp2zrW7fMt5BMBRI4ZBXyeHqy_CiG@rain.db.elephantsql.com/ngexzlxj",
-    "port": 5432,
-    "dialect": "postgres",
-    "pool": {
-      "max": 5,
-      "min": 0,
-      "acquire": 30000,
-      "idle": 10000
-    },
-    "url": "postgres://ngexzlxj:v6ixp2zrW7fMt5BMBRI4ZBXyeHqy_CiG@rain.db.elephantsql.com/ngexzlxj"
-  },
-  "development": {
-    "username": "postgres",
-    "password": "postgres",
-    "database": "postgres",
-    "host": "localhost",
-    "port": 5432,
-    "dialect": "postgres",
-    "pool": {
-      "max": 5,
-      "min": 0,
-      "acquire": 30000,
-      "idle": 10000
-    }
-  },
-  
-  "production": {
-    "username": "postgres",
-    "password": "greenage",
-    "database": "farmacie",
-    "host": "192.168.100.17",
-    "port": 5432,
-    "dialect": "postgres",
-    "pool": {
-      "max": 5,
-      "min": 0,
-      "acquire": 30000,
-      "idle": 10000
-    }
-  }
+	"local": {
+		"username": "ngexzlxj",
+		"password": "admin",
+		"database": "postgres",
+		"host": "postgres://ngexzlxj:v6ixp2zrW7fMt5BMBRI4ZBXyeHqy_CiG@rain.db.elephantsql.com/ngexzlxj",
+		"port": 5432,
+		"dialect": "postgres",
+		"pool": {
+			"max": 5,
+			"min": 0,
+			"acquire": 30000,
+			"idle": 10000
+		},
+		"url": "postgres://ngexzlxj:v6ixp2zrW7fMt5BMBRI4ZBXyeHqy_CiG@rain.db.elephantsql.com/ngexzlxj"
+	},
+	"development": {
+		"username": "postgres",
+		"password": "greenage",
+		"database": "oldfarmcaie",
+		"host": "localhost",
+		"port": 5432,
+		"dialect": "postgres",
+		"pool": {
+			"max": 5,
+			"min": 0,
+			"acquire": 30000,
+			"idle": 10000
+		}
+	},
+
+	"production": {
+		"username": "postgres",
+		"password": "greenage",
+		"database": "farmacie",
+		"host": "192.168.100.17",
+		"port": 5432,
+		"dialect": "postgres",
+		"pool": {
+			"max": 5,
+			"min": 0,
+			"acquire": 30000,
+			"idle": 10000
+		}
+	}
 }
