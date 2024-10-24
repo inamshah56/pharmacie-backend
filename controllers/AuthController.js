@@ -528,17 +528,25 @@ exports.address = [
                     where: { userId: req.user.id },
                });
 
-               // Loop through each address to check referral code expiry and subscription expiry
                for (let address of data) {
-                    if (address.activated) {
-                         // Check if the referral code or subscription is expired
-                         const referralExpired = address.refered_by ? await refferalCodeExpired(address.refered_by) : false;
-                         if (subscriptionExpired(address.active_date) || referralExpired) {
-                              address.activated = false;
-                              await address.save();
-                         }
+                    if (address.activated && subscriptionExpired(address.activated)) {
+                         address.activated = false;
+                         await address.save();
                     }
                }
+
+               // use this code if want to end service on referral code expiry
+               // Loop through each address to check referral code expiry and subscription expiry
+               // for (let address of data) {
+               //      if (address.activated) {
+               //           // Check if the referral code or subscription is expired
+               //           const referralExpired = address.refered_by ? await refferalCodeExpired(address.refered_by) : false;
+               //           if (subscriptionExpired(address.active_date) || referralExpired) {
+               //                address.activated = false;
+               //                await address.save();
+               //           }
+               //      }
+               // }
 
                return apiResponse.successResponseWithData(res, "Address fetched successfully", data);
           }
